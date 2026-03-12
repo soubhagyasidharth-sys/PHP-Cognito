@@ -3,30 +3,50 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
 
+/*
+|--------------------------------------------------------------------------
+| Home Route
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/', function () {
 
+    // If user already logged in
     if(session('id_token')){
-        return view('welcome');
+        return view('welcomePage');
     }
 
-    return redirect('/login');
+    // Show login page
+    return view('index');
 });
 
+
+/*
+|--------------------------------------------------------------------------
+| Login Route - Redirect to Cognito
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/login', function () {
 
     $clientId = "7l4pbndvbv46r3ghlgkbi4msrt";
     $redirectUri = urlencode("https://cognito-redirect.vercel.app");
 
-    $loginUrl = "https://ap-south-1hq2ed9iqe.auth.ap-south-1.amazoncognito.com/login".
-        "?response_type=code".
-        "&client_id=".$clientId.
-        "&redirect_uri=".$redirectUri.
-        "&scope=email+openid+phone";
+    $loginUrl = "https://ap-south-1hq2ed9iqe.auth.ap-south-1.amazoncognito.com/login"
+        . "?response_type=code"
+        . "&client_id=".$clientId
+        . "&redirect_uri=".$redirectUri
+        . "&scope=email+openid+phone";
 
     return redirect($loginUrl);
 });
 
+
+/*
+|--------------------------------------------------------------------------
+| Callback Route - Exchange code for tokens
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/callback', function () {
 
@@ -67,6 +87,12 @@ Route::get('/callback', function () {
     return $tokens;
 });
 
+
+/*
+|--------------------------------------------------------------------------
+| Logout Route
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/logout', function(){
 
